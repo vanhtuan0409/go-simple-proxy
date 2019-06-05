@@ -7,12 +7,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"regexp"
 	"time"
 )
 
 type proxy struct {
 	server         *http.Server
-	blacklistHosts map[string]bool
+	blacklistHosts *regexp.Regexp
 }
 
 func main() {
@@ -63,7 +64,7 @@ func createProxy(conf *config) *proxy {
 }
 
 func (p *proxy) handler(rw http.ResponseWriter, r *http.Request) {
-	if p.blacklistHosts[r.Host] {
+	if p.blacklistHosts.MatchString(r.Host) {
 		http.Error(rw, "Forbidden", http.StatusForbidden)
 		return
 	}

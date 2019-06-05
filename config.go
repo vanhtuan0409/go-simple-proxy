@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/pflag"
@@ -9,7 +10,7 @@ import (
 
 type config struct {
 	port           int
-	blacklistHosts map[string]bool
+	blacklistHosts *regexp.Regexp
 }
 
 func parseConfig() (*config, error) {
@@ -20,29 +21,33 @@ func parseConfig() (*config, error) {
 
 	pflag.Parse()
 
-	blacklistHosts, err := readBlacklistToMap(*fBlacklistFile)
+	pattern, err := readBlacklistToPattern(*fBlacklistFile)
 	if err != nil {
 		return nil, err
 	}
 
 	return &config{
 		port:           *fPort,
-		blacklistHosts: blacklistHosts,
+		blacklistHosts: pattern,
 	}, nil
 }
 
-func readBlacklistToMap(p string) (map[string]bool, error) {
+func readBlacklistToPattern(p string) (*regexp.Regexp, error) {
 	content, err := ioutil.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}
 
-	lines := strings.Split(string(content), "\n")
-	m := make(map[string]bool)
-
-	for _, line := range lines {
-		m[line] = true
+	normalize := strings.TrimSpace(string(content))
+	lines := strings.Split(normalize, "\n")
+	for i := 0; i < len(lines); i++ {
+		lines[i] = strings.TrimSpace(lines[i])
+	}
+	pattern := strings.Join(lines, "|")
+	rx, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, err
 	}
 
-	return m, nil
+	return rx, nil
 }
