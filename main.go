@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	port := 8080
-	server := getServer(port)
+	config := parseConfig()
+	server := getServer(config.port)
 	errChan := make(chan error, 2)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt)
@@ -29,7 +29,7 @@ func main() {
 		errChan <- server.Shutdown(ctx)
 	}()
 
-	log.Printf("Server is listenning on port :%d", port)
+	log.Printf("Server is listenning on port :%d", config.port)
 
 	err := <-errChan
 	if err != nil && err != http.ErrServerClosed {
