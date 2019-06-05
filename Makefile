@@ -2,7 +2,7 @@ build:
 	go build -o bin/pikachu .
 
 run:
-	go run *.go
+	go run *.go --blacklist-file blacklists.txt
 
 start-browser:
 	/opt/google/chrome/chrome --proxy-server=http://localhost:8080
