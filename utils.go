@@ -19,6 +19,14 @@ func pipe(dst io.WriteCloser, src io.ReadCloser) {
 	io.Copy(dst, src)
 }
 
+func pipeWithTee(dst io.WriteCloser, src io.ReadCloser, sniffer io.Writer) {
+	defer dst.Close()
+	defer src.Close()
+
+	r := io.TeeReader(src, sniffer)
+	io.Copy(dst, r)
+}
+
 func addSignatureHeader(h http.Header) {
 	h.Set("X-Proxy-Name", "tuanvuong")
 }
