@@ -15,8 +15,8 @@ func handleConnectProxy(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "Service Unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	rw.WriteHeader(http.StatusOK)
 	addSignatureHeader(rw.Header())
+	rw.WriteHeader(http.StatusOK)
 	hijacker, ok := rw.(http.Hijacker)
 	if !ok {
 		log.Printf("Hijacking not supported. ERR: %v", err)
