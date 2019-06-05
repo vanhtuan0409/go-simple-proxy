@@ -1,3 +1,6 @@
+build:
+	go build -o bin/pikachu .
+
 run:
 	go run *.go
 
