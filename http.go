@@ -7,7 +7,7 @@ import (
 )
 
 func handleHTTPProxy(rw http.ResponseWriter, r *http.Request) {
-	log.Printf("Proxy for request: [%s] %s - %s", r.URL.Scheme, r.Method, r.RequestURI)
+	log.Printf("Proxy for request: [HTTP] %s - %s - %s", r.Method, r.Host, r.RequestURI)
 	client := http.Client{}
 	req, err := http.NewRequest(r.Method, r.RequestURI, r.Body)
 	if err != nil {
@@ -20,11 +20,11 @@ func handleHTTPProxy(rw http.ResponseWriter, r *http.Request) {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("Cannot execute request. ERR: %v\n", err)
-		http.Error(rw, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(rw, "Service Unavailable", http.StatusServiceUnavailable)
 		return
 	}
 	defer resp.Body.Close()
-	rw.Header().Set("X-Proxy-Name", "tuanvuong")
+	addSignatureHeader(rw.Header())
 	copyHeader(rw.Header(), resp.Header)
 	rw.WriteHeader(resp.StatusCode)
 	io.Copy(rw, resp.Body)

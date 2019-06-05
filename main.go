@@ -43,8 +43,16 @@ func getServer(port int) *http.Server {
 	addr := fmt.Sprintf(":%d", port)
 	return &http.Server{
 		Addr:         addr,
-		Handler:      http.HandlerFunc(handleHTTPProxy),
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Handler:      http.HandlerFunc(handler),
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+	}
+}
+
+func handler(rw http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodConnect {
+		handleConnectProxy(rw, r)
+	} else {
+		handleHTTPProxy(rw, r)
 	}
 }
