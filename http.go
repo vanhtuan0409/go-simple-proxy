@@ -8,6 +8,8 @@ import (
 
 func handleHTTPProxy(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("Proxy for request: [HTTP] %s - %s - %s", r.Method, r.Host, r.RequestURI)
+	// Can optimize using customize Transporter
+	// to adjust number of keep-alive and reuse connection
 	resp, err := http.DefaultTransport.RoundTrip(r)
 	if err != nil {
 		log.Printf("Cannot execute request. ERR: %v\n", err)
