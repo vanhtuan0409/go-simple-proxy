@@ -3,7 +3,7 @@
 Simple proxy that supports:
 - [x] HTTP proxy
 - [x] HTTPS proxy via CONNECT
-- [x] Backlist by domain
+- [x] Backlist by domains
 
 ### Installation
 
