@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
+	"log"
 	"regexp"
 	"strings"
 
@@ -23,7 +25,7 @@ func parseConfig() (*config, error) {
 
 	pattern, err := readBlacklistToPattern(*fBlacklistFile)
 	if err != nil {
-		return nil, err
+		log.Printf("Failed to convert blacklist file into pattern. Starting proxy without blacklist. ERR: %v", err)
 	}
 
 	return &config{
@@ -39,6 +41,10 @@ func readBlacklistToPattern(p string) (*regexp.Regexp, error) {
 	}
 
 	normalize := strings.TrimSpace(string(content))
+	if normalize == "" {
+		return nil, errors.New("No blacklist domain")
+	}
+
 	lines := strings.Split(normalize, "\n")
 	for i := 0; i < len(lines); i++ {
 		lines[i] = strings.TrimSpace(lines[i])

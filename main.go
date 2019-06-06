@@ -64,7 +64,7 @@ func createProxy(conf *config) *proxy {
 }
 
 func (p *proxy) handler(rw http.ResponseWriter, r *http.Request) {
-	if p.blacklistHosts.MatchString(r.Host) {
+	if p.blacklistHosts != nil && p.blacklistHosts.MatchString(r.Host) {
 		http.Error(rw, "Forbidden", http.StatusForbidden)
 		return
 	}
