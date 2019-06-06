@@ -8,16 +8,7 @@ import (
 
 func handleHTTPProxy(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("Proxy for request: [HTTP] %s - %s - %s", r.Method, r.Host, r.RequestURI)
-	client := http.Client{}
-	req, err := http.NewRequest(r.Method, r.RequestURI, r.Body)
-	if err != nil {
-		log.Printf("Cannot create request. ERR: %v\n", err)
-		http.Error(rw, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	copyHeader(req.Header, r.Header)
-
-	resp, err := client.Do(req)
+	resp, err := http.DefaultTransport.RoundTrip(r)
 	if err != nil {
 		log.Printf("Cannot execute request. ERR: %v\n", err)
 		http.Error(rw, "Service Unavailable", http.StatusServiceUnavailable)

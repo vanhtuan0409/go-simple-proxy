@@ -4,12 +4,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 )
 
 func handleConnectProxy(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("Proxy for request: [Connect] %s - %s - %s", r.Method, r.Host, r.RequestURI)
-	dialer := net.Dialer{}
-	outConn, err := dialer.Dial("tcp", r.Host)
+	outConn, err := net.DialTimeout("tcp", r.Host, 10*time.Second)
 	if err != nil {
 		log.Printf("Cannot dial TCP connection. ERR: %v\n", err)
 		http.Error(rw, "Service Unavailable", http.StatusServiceUnavailable)
